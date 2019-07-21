@@ -1,7 +1,8 @@
-package com.example.photodisplayer
+package com.example.photodisplayer.view
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.example.photodisplayer.R
 
 class MainActivity : AppCompatActivity() {
 
