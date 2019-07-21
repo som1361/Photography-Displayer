@@ -38,4 +38,8 @@ class MainViewModel (){
             })
         compositeDisposable.add(disposable)
     }
+
+    fun cancelNetworkConnections() {
+        compositeDisposable.clear()
+    }
 }

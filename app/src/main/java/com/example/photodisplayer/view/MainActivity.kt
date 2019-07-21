@@ -1,5 +1,6 @@
 package com.example.photodisplayer.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
@@ -48,12 +49,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadView() {
         setContentView(R.layout.activity_main)
-        mSearchAdapter = SearchAdapter(PhotoListener { photoId ->
+        mSearchAdapter = SearchAdapter(PhotoListener { photoUrl ->
+            gotoWebViewActivity(photoUrl)
         })
         mGridLayoutManager = GridLayoutManager(this, 2)
         search_recyclerview.layoutManager = mGridLayoutManager
         search_recyclerview.adapter = mSearchAdapter
         search_progress_bar.hide()
+    }
+
+    private fun gotoWebViewActivity(photoUrl: String) {
+        val bundle = Bundle()
+        bundle.putString(PhotoActivity.Constants.URL, photoUrl)
+        val intent = Intent(this, PhotoActivity::class.java)
+        intent.putExtras(bundle)
+        startActivity(intent)
     }
 
     private fun respondToClicks() {
@@ -68,5 +78,10 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mMainViewModel.cancelNetworkConnections()
     }
 }
