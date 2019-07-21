@@ -1,7 +1,8 @@
 package com.example.photodisplayer.viewmodel
 
+import com.example.photodisplayer.application.PhotoApplication
+import com.example.photodisplayer.domain.Repository.PhotoRepository
 import com.example.photodisplayer.domain.model.PhotoSearchDTO
-import com.example.photodisplayer.model.PhotoSearchModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -9,30 +10,22 @@ import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import retrofit2.HttpException
+import javax.inject.Inject
 
-class MainViewModel (){
-    lateinit var resultObservable: PublishSubject<PhotoSearchDTO.Photos>
-    lateinit var resultErrorObservable: PublishSubject<HttpException>
+class MainViewModel @Inject constructor(private var photoRepository: PhotoRepository){
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private lateinit var organicModel:PhotoSearchModel
-
-    constructor(mOrganicModel:PhotoSearchModel):this(){
-        organicModel = mOrganicModel
-        resultObservable = PublishSubject.create()
-        resultErrorObservable = PublishSubject.create()
-    }
 
     fun findPhotos(keyword: String)  {
-        val disposable: Disposable = organicModel.fetchOrganicList(keyword)
+        val disposable: Disposable = photoRepository.searchPhoto(keyword)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : DisposableSingleObserver<PhotoSearchDTO.Photos>(){
                 override fun onSuccess(t: PhotoSearchDTO.Photos) {
-                    resultObservable.onNext(t)
+                    PhotoApplication.getAsyncComponent().getGetContentObservable().onNext(t)
                 }
 
                 override fun onError(e: Throwable) {
-                    resultErrorObservable.onNext(e as HttpException)
+                    PhotoApplication.getAsyncComponent().getGetContentErrorObservable().onNext(e as HttpException)
                 }
 
             })

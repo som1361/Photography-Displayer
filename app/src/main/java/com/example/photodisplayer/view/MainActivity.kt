@@ -6,34 +6,44 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.view.MotionEvent
 import android.view.View
+import com.example.photodisplayer.DI.component.ActivityComponent
+import com.example.photodisplayer.DI.component.DaggerActivityComponent
+import com.example.photodisplayer.DI.module.ActivityModule
 import com.example.photodisplayer.R
+import com.example.photodisplayer.application.PhotoApplication
 import com.example.photodisplayer.domain.model.PhotoSearchDTO
-import com.example.photodisplayer.model.PhotoSearchModel
 import com.example.photodisplayer.viewmodel.MainViewModel
 import com.example.webviewscreenshot.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var mMainViewModel: MainViewModel
+    @Inject lateinit var mMainViewModel: MainViewModel
     private lateinit var mGridLayoutManager: GridLayoutManager
     private lateinit var mSearchAdapter: SearchAdapter
+    lateinit var activityComponent: ActivityComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        activityComponent = DaggerActivityComponent
+            .builder()
+            .appComponent((application as PhotoApplication).photoComponent)
+            .activityModule(ActivityModule(this))
+            .build()
+        activityComponent.inject(this)
         super.onCreate(savedInstanceState)
-        mMainViewModel = MainViewModel(PhotoSearchModel())
         loadView()
         respondToClicks()
         listenToObservables()
     }
 
     private fun listenToObservables() {
-        mMainViewModel.resultObservable.subscribe({
+        PhotoApplication.getAsyncComponent().getGetContentObservable().subscribe({
             search_progress_bar.hide()
             if (it.photos.size == 0)
                 showSuccessMessage(this, R.string.empty_list)
             updatePhotoList(it)
         })
-        mMainViewModel.resultErrorObservable.subscribe({
+        PhotoApplication.getAsyncComponent().getGetContentErrorObservable().subscribe({
             search_progress_bar.hide()
           //  showFailMessage(this, it.message())
         })
