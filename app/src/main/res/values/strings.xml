@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Photo Displayer</string>
     <string name="empty_list">No result found.</string>
+    <string name="invalid_keyword">Please enter a valid query.</string>
 </resources>

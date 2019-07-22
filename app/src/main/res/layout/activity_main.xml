@@ -39,6 +39,18 @@
 
     </android.support.constraint.ConstraintLayout>
 
+    <TextView
+            android:visibility="gone"
+            android:text="Photos provided by Pexels"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/link_textview"
+            android:textSize="18sp"
+            tools:text="Photos provided by Pexels"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/search_bar_layout" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
+    />
 
     <android.support.v7.widget.RecyclerView
             android:layout_width="0dp"
@@ -46,7 +58,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" android:id="@+id/search_recyclerview"
-            app:layout_constraintTop_toBottomOf="@id/search_bar_layout"/>
+            app:layout_constraintTop_toBottomOf="@+id/link_textview" android:layout_marginTop="8dp">
+    </android.support.v7.widget.RecyclerView>
     <ProgressBar
             android:id="@+id/search_progress_bar"
             android:layout_width="wrap_content"

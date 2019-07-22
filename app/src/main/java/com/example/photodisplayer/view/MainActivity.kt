@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
+import android.text.SpannableString
 import android.view.MotionEvent
 import android.view.View
 import com.example.photodisplayer.DI.component.ActivityComponent
@@ -41,7 +42,10 @@ class MainActivity : AppCompatActivity() {
             search_progress_bar.hide()
             if (it.photos.size == 0)
                 showSuccessMessage(this, R.string.empty_list)
-            updatePhotoList(it)
+            else {
+                link_textview.visibility = View.VISIBLE
+                updatePhotoList(it)
+            }
         })
         PhotoApplication.getAsyncComponent().getGetContentErrorObservable().subscribe({
             search_progress_bar.hide()
@@ -66,6 +70,8 @@ class MainActivity : AppCompatActivity() {
         search_recyclerview.layoutManager = mGridLayoutManager
         search_recyclerview.adapter = mSearchAdapter
         search_progress_bar.hide()
+
+        link_textview.makePartOfTextViewClickable("Pexels", { gotoWebViewActivity("https://www.pexels.com") })
     }
 
     private fun gotoWebViewActivity(photoUrl: String) {
@@ -78,8 +84,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun respondToClicks() {
         search_imageView.setOnClickListener({
+            val keyword = search_editText.text.toString()
+            if (keyword.length == 0)
+                showFailMessage(this, R.string.invalid_keyword)
+            else {
             search_progress_bar.show()
             mMainViewModel.findPhotos(search_editText.text.toString())
+        }
         })
 
         search_layout.setOnTouchListener(object : View.OnTouchListener {
