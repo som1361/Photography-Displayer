@@ -4,5 +4,5 @@ import com.example.photodisplayer.domain.model.PhotoSearchDTO
 import io.reactivex.Single
 
 interface PhotoRepository {
-    fun searchPhoto(keyword: String): Single<PhotoSearchDTO.Photos>
+    fun searchPhoto(keyword: String, perPage: Int, page: Int): Single<PhotoSearchDTO.Photos>
 }

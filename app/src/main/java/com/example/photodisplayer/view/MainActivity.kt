@@ -1,10 +1,10 @@
 package com.example.photodisplayer.view
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
-import android.text.SpannableString
 import android.view.MotionEvent
 import android.view.View
 import com.example.photodisplayer.DI.component.ActivityComponent
@@ -19,7 +19,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
-    @Inject lateinit var mMainViewModel: MainViewModel
+    @Inject
+    lateinit var mMainViewModel: MainViewModel
     private lateinit var mGridLayoutManager: GridLayoutManager
     private lateinit var mSearchAdapter: SearchAdapter
     lateinit var activityComponent: ActivityComponent
@@ -49,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         })
         PhotoApplication.getAsyncComponent().getGetContentErrorObservable().subscribe({
             search_progress_bar.hide()
-          //  showFailMessage(this, it.message())
+            //  showFailMessage(this, it.message())
         })
     }
 
@@ -63,15 +64,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadView() {
         setContentView(R.layout.activity_main)
+        //Click item to load the photo’s URL in web browser
         mSearchAdapter = SearchAdapter(PhotoListener { photoUrl ->
-            gotoWebViewActivity(photoUrl)
+            startActivity( Intent(Intent.ACTION_VIEW, Uri.parse(photoUrl)))
         })
         mGridLayoutManager = GridLayoutManager(this, 2)
         search_recyclerview.layoutManager = mGridLayoutManager
         search_recyclerview.adapter = mSearchAdapter
         search_progress_bar.hide()
 
-        link_textview.makePartOfTextViewClickable("Pexels", { gotoWebViewActivity("https://www.pexels.com") })
+//add prominent link to Pexels on the search result page
+        link_textview.makePartOfTextViewClickable("Pexels", { gotoWebViewActivity(getString(R.string.prominent_link)) })
     }
 
     private fun gotoWebViewActivity(photoUrl: String) {
@@ -88,9 +91,11 @@ class MainActivity : AppCompatActivity() {
             if (keyword.length == 0)
                 showFailMessage(this, R.string.invalid_keyword)
             else {
-            search_progress_bar.show()
-            mMainViewModel.findPhotos(search_editText.text.toString())
-        }
+                search_progress_bar.show()
+                val page = 1
+                val perPage = 30
+                mMainViewModel.findPhotos(search_editText.text.toString(), perPage, page)
+            }
         })
 
         search_layout.setOnTouchListener(object : View.OnTouchListener {

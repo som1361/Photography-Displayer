@@ -1,5 +1,6 @@
 package com.example.photodisplayer.viewmodel
 
+import android.content.Context
 import com.example.photodisplayer.application.PhotoApplication
 import com.example.photodisplayer.domain.Repository.PhotoRepository
 import com.example.photodisplayer.domain.model.PhotoSearchDTO
@@ -15,8 +16,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(private var photoRepository: PhotoRepository){
     private var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
-    fun findPhotos(keyword: String)  {
-        val disposable: Disposable = photoRepository.searchPhoto(keyword)
+    fun findPhotos(keyword: String, perPage: Int, page: Int)  {
+        val disposable: Disposable = photoRepository.searchPhoto(keyword, perPage, page)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : DisposableSingleObserver<PhotoSearchDTO.Photos>(){
